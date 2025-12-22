@@ -1,0 +1,12 @@
+Rollback:
+k rollout undo deployment redis -n neptune
+
+Editing:
+k edit deployment -n neptune api-new-c32
+
+Status:
+k rollout history deployment redis -n neptune
+k rollout status deploy redis -n neptune
+
+Set Image:
+k set image deploy <deploy-name> <container_name>=<new_image>
