@@ -1,0 +1,47 @@
+Plain Key-Value:
+env:
+- name: App_Color
+  value: "pink"
+
+ConfigMaps:
+
+1. Single ENV variable from one key
+env:
+- name: App_Color
+  valueFrom:
+    configMapKeyRef:
+      name: app_config
+      key: App_Color
+
+2. ENV - Import all keys as env vars
+envFrom:
+- configMapRef;
+  name: app_config
+
+3. Volume
+volumes:
+- name: app-config-volume
+  configMap:
+    name: app_config
+
+Secrets:
+
+1. Single ENV
+env:
+- name: App_Color
+  valueFrom:
+    secretKeyRef:
+      name: app_config
+      key: App_Color
+
+2. ENV
+envFrom:
+- secretRef;
+  name: app_config
+
+3. Volume
+volumes:
+- name: app-config-volume
+  secret:
+    secretName: app_config
+
