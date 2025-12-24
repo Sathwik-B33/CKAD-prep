@@ -1,0 +1,26 @@
+k -n default get po pod1 -o jsonpath="{.status}"
+
+k -n default get po pod1 -o jsonpath="{.status}" | jq -> the last part(jq) is used to get the data in readable format
+
+suppose we need to write a comamand(to get pod status) into /opt/course/2/pod1-status-cmd.sh 
+-> first, echo kubectl -n default get po pod1 -o jsonpath="{.status}"  > /opt/course/2/pod1-status-cmd.sh 
+-> then, chmod +x /opt/course/2/pod1-status-cmd.sh 
+-> finally to check we do,
+    -> sh /opt/course/2/pod1-status-cmd.sh 
+        -> # sh is used cause "pod1-status-cmd.sh"
+
+----------------------------------------------------------------------------
+
+if you want to check before what's inside a revision just:
+
+k rollout history deploy mydeploy --revision=<number>
+
+this way you're able to save time if you know where the problem is.
+
+-----------------------------------------------------------------------------------------
+
+create a pod named project-plt in pluto namespace of image nginx, the pod should be identified by label project: plt-6cc-api
+now expose the above pod by creating a clusterip svc named project-plt-svc, the svc shd use tcp port redirection of 3333:80
+
+-> k -n pluto run project-plt --image=nginx --labels project=plt-6cc-api
+-> k -n pluto expose pod project-plt --name project-plt-svc --port 3333 --target-port 80
