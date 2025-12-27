@@ -24,3 +24,16 @@ now expose the above pod by creating a clusterip svc named project-plt-svc, the 
 
 -> k -n pluto run project-plt --image=nginx --labels project=plt-6cc-api
 -> k -n pluto expose pod project-plt --name project-plt-svc --port 3333 --target-port 80
+
+-----------------------------------------------------------------------------------------
+
+To run a tmp pod for testing 
+
+k run tmp --restart=Never --rm --image=nginx -i -- curl http://project-pvc-svc.pluto:3333
+                                                        |-> endpoint name.        |(pluto)-> namespace  |(3333)-> port no.
+
+if it uses a node port
+first, k get nodes -o wide -> which gives us the internal ip address
+then find the port number using -> k get svc my-svc
+
+k run tmp --restart=Never --rm --image=nginx -i -- curl http://192.168.49.2:30007

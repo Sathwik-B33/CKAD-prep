@@ -1,0 +1,118 @@
+Chart
+-> A package of Kubernetes YAMLs (templates + values)
+Release
+-> A running instance of a chart in a cluster
+Repository
+-> A collection of charts (like an app store)
+values.yaml
+-> Default configuration for a chart
+templates/
+-> Parameterized Kubernetes YAML files
+
+Architecture
+Chart
+ ├── Chart.yaml      (metadata)
+ ├── values.yaml     (default config)
+ └── templates/
+     ├── deployment.yaml
+     ├── service.yaml
+     └── ...
+
+comamands
+
+helm version
+
+helm repo add bitnami https://charts.bitnami.com/bitnami -> add chart repo
+helm repo update
+helm repo list
+
+helm search repo nginx
+helm search repo bitnami/nginx
+
+helm install my-nginx bitnami/nginx
+	•	my-nginx → release name
+	•	bitnami/nginx → chart name
+
+install into a namespace
+helm install my-nginx bitnami/nginx -n web --create-namespace
+
+helm list
+helm list -A     # all namespaces
+
+helm status my-nginx
+
+ovveride values at install time
+1. using --set
+helm install my-nginx bitnami/nginx \
+  --set service.type=NodePort \
+  --set replicaCount=2
+
+2. using a values file
+helm install my-nginx bitnami/nginx -f custom-values.yaml
+
+upgrade:
+helm upgrade my-nginx bitnami/nginx
+helm upgrade my-nginx bitnami/nginx -f prod-values.yaml
+
+rollback:
+helm rollback my-nginx 1
+list versions:
+helm history my-nginx
+
+helm uninstall my-nginx
+
+Helm lint is a static analysis / validation tool for Helm charts.
+Use helm lint when:
+	•	You create or modify a Helm chart
+	•	You change:
+	•	templates/*.yaml
+	•	values.yaml
+	•	Chart.yaml
+	•	Before:
+	•	helm install
+	•	helm upgrade
+
+Lint a local chart
+helm lint my-chart/
+
+lint with custom values:
+helm lint my-chart/ -f values-prod.yaml
+
+lint with --set
+helm lint my-chart --set service.type=NodePort
+
+lifecycle:
+helm create my-chart
+      ↓
+edit templates / values
+      ↓
+helm lint my-chart      ✅
+      ↓
+helm install myapp my-chart
+      ↓
+helm upgrade myapp my-chart
+      ↓
+helm rollback myapp 1 (if needed)
+
+
+
+Complete Helm Command Set (CKAD-relevant)
+Repository & Search
+helm repo add
+helm repo update
+helm repo list
+helm search repo
+
+Chart Creation & Validation
+helm create
+helm lint          ✅ (the one you called out)
+helm template
+
+Install & Manage
+helm install
+helm list
+helm status
+helm upgrade
+helm rollback
+helm history
+helm uninstall
