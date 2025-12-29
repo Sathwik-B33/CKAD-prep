@@ -1,0 +1,4 @@
+View the metrics (CPU and Memory) of the node cluster2-node01 and copy the output to the /root/node-metrics file in nodeName, CPU and memory.
+
+ans:
+kubectl top nodes cluster2-node01 > /root/node-metrics

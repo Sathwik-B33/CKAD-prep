@@ -1,0 +1,41 @@
+first,
+-> kubectl create ns frontend-apd
+
+Now, on the student-node node and go to the /opt/ directory. We have given the helm chart directory webapp-color-apd that contains templates, values files, and the chart file etc.
+
+Update the values according to the given specifications as follows: -
+
+a.) Update the value of the appVersion to 1.20.0 in the Chart.yaml file.
+
+b.) Update the value of the replicaCount to 3 in the values.yaml file.
+
+c.) Update the value of the type to NodePort in the values.yaml file.
+
+These are the values we have to update.
+
+Now, we will use the helm lint command to check the Helm chart because it can identify errors such as missing or misconfigured values, invalid YAML syntax, and deprecated APIs etc.
+
+
+next,
+cd /opt/
+
+helm lint ./webapp-color-apd/
+
+we will see something like this,
+
+helm lint ./webapp-color-apd/
+==> Linting ./webapp-color-apd/
+[INFO] Chart.yaml: icon is recommended
+
+1 chart(s) linted, 0 chart(s) failed
+
+now, when we try install the helm chat by running the cmd:
+helm install webapp-color-apd -n frontend-apd ./webapp-color-apd
+we see an error because,
+->Deployment apiVersion needs to be correctly written. It should be apiVersion: apps/v1.
+->In the service YAML, there is a typo in the template variable {{ .Values.service.name }} because of that, it's not able to reference the value of the name field defined in the values.yaml file for the Kubernetes service that is being created or updated.
+
+then try again, helm install webapp-color-apd -n frontend-apd ./webapp-color-apd
+
+Use the helm ls command to list the release deployed using helm.
+helm ls -n frontend-apd

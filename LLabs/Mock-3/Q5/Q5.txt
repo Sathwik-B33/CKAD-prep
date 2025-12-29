@@ -1,0 +1,17 @@
+In the ckad-pod-design namespace, we created a pod named custom-nginx that runs the nginx:1.17 image.
+
+Take appropriate actions to update the index.html page of this NGINX container with below value instead of default NGINX welcome page:
+"Welcome to CKAD mock exams!"
+
+NOTE: By default NGINX web server default location is at /usr/share/nginx/html which is located on the default file system of the Linux.
+
+
+Soln:
+
+Exec to the pod container and update the index.html file content:
+student-node ~ ➜kubectl exec -it -n ckad-pod-design custom-nginx -- sh
+# echo 'Welcome to CKAD mock exams!' > /usr/share/nginx/html/index.html
+
+Observe the result:
+student-node ~ ➜  kubectl exec -it -n ckad-pod-design custom-nginx -- cat /usr/share/nginx/html/index.html
+Welcome to CKAD mock exams!
