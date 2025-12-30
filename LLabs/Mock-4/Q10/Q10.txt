@@ -1,0 +1,10 @@
+We have deployed an application in the green-space namespace. we also deployed the ingress controller and the ingress resource.
+
+
+However, currently, the ingress controller is not working as expected. Inspect the ingress definitions and troubleshoot the issue so that the services are accessible as per the ingress resource definition.
+
+Also, update the path for the app-wear-service to /app-wear and app-video-service to /app-video.
+
+
+Note: You are allowed to edit or delete the resources related to ingress but do not change the pods.
+

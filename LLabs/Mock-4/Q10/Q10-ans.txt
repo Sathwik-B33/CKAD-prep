@@ -1,0 +1,119 @@
+Check the status of the ingress, pods, and application related services.
+
+cluster3-controlplane ~ ➜  k get pods -n ingress-nginx 
+NAME                                        READY   STATUS      RESTARTS      AGE
+ingress-nginx-admission-create-l6fgw        0/1     Completed   0             11m
+ingress-nginx-admission-patch-sfgc4         0/1     Completed   0             11m
+ingress-nginx-controller-5f8964959d-278rc   0/1     Error       2 (26s ago)   29s
+
+
+(Why this command is commonly used (very important)
+
+1️⃣ To check if the Ingress Controller is running
+
+Most Kubernetes clusters deploy the NGINX Ingress Controller in the ingress-nginx namespace.)
+
+
+You would see an Error or CrashLoopBackOff in the ingress-nginx-controller. 
+Inspect the logs of the controller pod.
+cluster3-controlplane ~ ✖ k logs -n ingress-nginx ingress-nginx-controller-5f8964959d-278rc 
+-------------------------------------------------------------------------------
+--------
+F0316 08:03:28.111614      57 main.go:83] No service with name default-backend-service found in namespace default:
+
+-------
+
+You see an error msg saying "No service with name default-backend-service found in namespace default".
+
+We don't have the service with that name in the default namespace, so we need to edit the ingress controller deployment to use the service that we have .i.e. default-backend-service in the green-space namespace.
+
+To create the controller deployment with correct backend service, first save the deployment in a file, delete the controller deployment, edit the file and create the deployment.
+
+Save the deployment in file
+
+k get -n ingress-nginx deployments.apps ingress-nginx-controller -o yaml >> ing-control.yaml
+
+Delete the deployment.
+k delete -n ingress-nginx deploy ingress-nginx-controller
+
+Edit the file to match the correct service.
+     spec:
+        containers:
+        - args:
+          - /nginx-ingress-controller
+          - --publish-service=$(POD_NAMESPACE)/ingress-nginx-controller
+          - --election-id=ingress-controller-leader
+          - --watch-ingress-without-class=true
+          - --default-backend-service=(default X)green-space/default-backend-service   #Changed to correct namespace
+          - --controller-class=k8s.io/ingress-nginx
+          - --ingress-class=nginx
+          - --configmap=$(POD_NAMESPACE)/ingress-nginx-controller
+          - --validating-webhook=:8443
+          - --validating-webhook-certificate=/usr/local/certificates/cert
+          - --validating-webhook-key=/usr/local/certificates/key
+
+
+then,
+Fix Ingress Resource Path Names
+
+Check the current Ingress paths:
+kubectl get ingress ingress-resource-uxz -n green-space -o yaml
+
+You will see paths like /app1 and /app2 pointing to app-wear-service and app-video-service.
+Edit the Ingress resource to match your application endpoints:
+
+kubectl edit ingress ingress-resource-uxz -n green-space
+
+Update the paths as follows:
+paths:
+    - backend:
+        service:
+          name: app-wear-service
+          port:
+            number: 8080
+      path: /app1      # Update this to /app-wear
+      pathType: Prefix
+    - backend:
+        service:
+          name: app-video-service
+          port:
+            number: 8080
+      path: /app2        # Update this to /app-video
+      pathType: Prefix
+
+Save and exit the editor.
+
+Verify Ingress Accessibility
+
+After updating, check your endpoints:
+ssh cluster3-controlplane
+
+cluster3-controlplane ~ ➜ curl localhost:30080/app-wear
+<!doctype html>
+<title>Hello from Flask</title>
+<body style="background: #2980b9;">
+
+<div style="color: #e4e4e4;
+    text-align:  center;
+    height: 90px;
+    vertical-align:  middle;">
+    <img src="https://res.cloudinary.com/cloudusthad/image/upload/v1547052428/apparels.jpg">
+
+</div>
+
+</body>
+
+cluster3-controlplane ~ ➜  curl localhost:30080/app-video
+<!doctype html>
+<title>Hello from Flask</title>
+<body style="background: #30336b;">
+
+<div style="color: #e4e4e4;
+    text-align:  center;
+    height: 90px;
+    vertical-align:  middle;">
+    <img src="https://res.cloudinary.com/cloudusthad/image/upload/v1547052431/video.jpg">
+
+</div>
+
+</body>
