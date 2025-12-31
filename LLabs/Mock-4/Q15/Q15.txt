@@ -1,0 +1,4 @@
+Create a ClusterRole named healthz-access that allows GET and POST requests to the non-resource endpoint /healthz and all subpaths.
+
+
+Bound this ClusterRole to a user healthz-user using a ClusterRoleBinding named healthz-access-binding.
