@@ -1,0 +1,28 @@
+One application, webpage-server-01, is deployed on the Kubernetes cluster by the Helm tool. Now, the team wants to deploy a new version of the application by replacing the existing one. A new version of the helm chart is given in the /root/new-version directory on the student-node. Validate the chart before installing it on the Kubernetes cluster. 
+
+
+Use the helm command to validate and install the chart. After successfully installing the newer version, uninstall the older version. 
+
+Soln:
+
+
+In this task, we will use the helm commands. Here are the steps: -
+
+
+Use the helm ls command to list the release deployed on the default namespace using helm.
+helm ls -n default
+
+First, validate the helm chart by using the helm lint command: -
+cd /root/
+
+helm lint ./new-version
+
+Now, install the new version of the application by using the helm install command as follows: -
+helm install --generate-name ./new-version
+
+We haven't got any release name in the task, so we can generate the random name from the --generate-name option.
+
+Finally, uninstall the old version of the application by using the helm uninstall command: -
+helm uninstall webpage-server-01 -n default
+
+
