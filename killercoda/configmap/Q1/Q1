@@ -3,3 +3,36 @@ Use the command redis-server /redis-master/redis.conf to store redis configurati
 
 Mount the redis-config configmap data to the pod for use within the container.
 
+Explanation:
+
+first of all,
+Use an initContainer when you see any of these patterns:
+
+“Put config/data into an emptyDir”
+
+If the question says:
+	•	“store this in an emptyDir”
+	•	“copy config”
+	•	“generate a config file”
+	•	“populate a directory”
+	•	“create file before app starts”
+
+•	Your Redis command is: redis-server /redis-master/redis.conf
+•	But your ConfigMap has no key named redis.conf, only:
+•	maxmemory
+•	maxmemory-policy
+•	So Redis can’t read those keys directly; it only knows how to read a redis.conf file.
+•	Therefore we generate /redis-master/redis.conf first (using the ConfigMap values), then start Redis with it.
+
+That’s exactly the point of the initContainer in the solution.
+
+Because emptyDir is a shared volume in the Pod, not tied to a single container.
+
+The lifecycle is like this:
+	1.	Pod starts → emptyDir volume is created once (empty)
+	2.	Init container runs first and writes:
+	•	/redis-master/redis.conf (into the emptyDir)
+	3.	Init container exits
+	4.	Main container starts
+	5.	Main container mounts the same emptyDir at /redis-master
+	6.	The file is still there → Redis reads it

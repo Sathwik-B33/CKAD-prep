@@ -42,3 +42,17 @@ spec:
     emptyDir: {}
   - name: redis-data
     emptyDir: {}
+
+---
+
+#Connect to the redis-pod container using the Redis CLI and inspect the configuration values.
+
+Open the Redis shell:
+
+#kubectl exec -it redis-pod -- redis-cli
+From the Redis prompt, retrieve the maxmemory setting:
+
+#CONFIG GET maxmemory
+In the same session, check the maxmemory-policy setting:
+
+#CONFIG GET maxmemory-policy
