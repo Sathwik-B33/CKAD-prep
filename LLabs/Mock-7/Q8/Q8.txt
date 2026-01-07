@@ -1,4 +1,7 @@
-One application, webpage-server-01, is deployed on the Kubernetes cluster by the Helm tool. Now, the team wants to deploy a new version of the application by replacing the existing one. A new version of the helm chart is given in the /root/new-version directory on the student-node. Validate the chart before installing it on the Kubernetes cluster. 
+One application, webpage-server-01, is deployed on the Kubernetes cluster by the Helm tool.
+Now, the team wants to deploy a new version of the application by replacing the existing one. 
+A new version of the helm chart is given in the /root/new-version directory on the student-node.
+Validate the chart before installing it on the Kubernetes cluster. 
 
 
 Use the helm command to validate and install the chart. After successfully installing the newer version, uninstall the older version. 

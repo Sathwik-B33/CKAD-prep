@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis-pod
+spec:
+  initContainers:
+  - name: init-redis-config
+    image: busybox:1.36
+    command:
+    - sh
+    - -c
+    - |
+      set -e
+      cat <<EOF >/redis-master/redis.conf
+      maxmemory $(cat /configmap/maxmemory)
+      maxmemory-policy $(cat /configmap/maxmemory-policy)
+      EOF
+    volumeMounts:
+    - name: redis-config
+      mountPath: /redis-master
+    - name: redis-config-map
+      mountPath: /configmap
+      readOnly: true
+  containers:
+  - name: redis
+    image: redis:7
+    command:
+    - redis-server
+    - /redis-master/redis.conf
+    ports:
+    - containerPort: 6379
+    volumeMounts:
+    - name: redis-config
+      mountPath: /redis-master
+    - name: redis-data
+      mountPath: /redis-data
+  volumes:
+  - name: redis-config-map
+    configMap:
+      name: redis-config
+  - name: redis-config
+    emptyDir: {}
+  - name: redis-data
+    emptyDir: {}
